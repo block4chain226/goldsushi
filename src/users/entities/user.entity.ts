@@ -1,5 +1,13 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
 import { IsPhoneNumber } from 'class-validator';
+import { Role } from './roles.entity';
 
 @Entity('users')
 export class User {
@@ -14,6 +22,9 @@ export class User {
   @Column({ type: 'varchar' })
   // @IsPhoneNumber()
   phone: string;
+  @ManyToOne(() => Role, (role) => role.users)
+  @JoinColumn()
+  role: Role;
   @Column({ type: 'boolean' })
   smsVerified: boolean;
   @Column({ type: 'boolean' })
