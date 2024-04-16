@@ -26,6 +26,7 @@ export class CreateUserInterceptor implements NestInterceptor {
       request.body.password,
       10,
     );
+    request.body.role = 2;
     const secret = this.configService.get('JWT_SECRET');
     const payload = { name: request.body.name };
     request.body.registrationToken = this.jwt_Service.sign(payload, {
@@ -35,4 +36,3 @@ export class CreateUserInterceptor implements NestInterceptor {
     return next.handle();
   }
 }
-

@@ -22,8 +22,8 @@ export class User {
   @Column({ type: 'varchar' })
   // @IsPhoneNumber()
   phone: string;
-  @ManyToOne(() => Role, (role) => role.users)
-  @JoinColumn()
+  @ManyToOne(() => Role, (role) => role.users, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'role_id' })
   role: Role;
   @Column({ type: 'boolean' })
   smsVerified: boolean;
