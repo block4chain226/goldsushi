@@ -9,13 +9,14 @@ import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from '../utils/Bcrypt/bcrypt.service';
 import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
+import { TokenService } from '../token/token.service';
 
 export class CreateUserInterceptor implements NestInterceptor {
   constructor(
-    @Inject(JwtService) private jwt_Service: JwtService,
+    // @Inject(ConfigService) private configService: ConfigService,
+    @Inject(TokenService) private tokenService: TokenService,
     @Inject(BcryptService)
     private bcrypt_service: BcryptService,
-    @Inject(ConfigService) private configService: ConfigService,
   ) {}
   async intercept(
     context: ExecutionContext,
@@ -27,12 +28,11 @@ export class CreateUserInterceptor implements NestInterceptor {
       10,
     );
     request.body.role = 2;
-    const secret = this.configService.get('JWT_SECRET');
     const payload = { name: request.body.name };
-    request.body.registrationToken = this.jwt_Service.sign(payload, {
-      secret: secret,
-      expiresIn: '24h',
-    });
+    request.body.registrationToken = this.tokenService.createJwtToken(
+      payload,
+      '24h',
+    );
     return next.handle();
   }
 }

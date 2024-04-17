@@ -6,6 +6,7 @@ import { BcryptModule } from '../utils/Bcrypt/bcrypt.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersService } from './users.service';
 import { MailModule } from '../mail/mail.module';
+import { TokenService } from '../token/token.service';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { MailModule } from '../mail/mail.module';
     MailModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, TokenService],
 })
 export class UsersModule {}

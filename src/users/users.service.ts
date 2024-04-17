@@ -11,7 +11,6 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MailService } from '../mail/mail.service';
-import { Buffer } from 'node:buffer';
 
 @Injectable()
 export class UsersService {
