@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from '../utils/Bcrypt/bcrypt.service';
 import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
+import { CreateEmailDto } from '../users/dto/create-email.dto';
 import { TokenService } from '../token/token.service';
 
 export class CreateUserInterceptor implements NestInterceptor {
@@ -29,10 +30,21 @@ export class CreateUserInterceptor implements NestInterceptor {
     );
     request.body.role = 2;
     const payload = { name: request.body.name };
-    request.body.registrationToken = this.tokenService.createJwtToken(
+    const registrationToken = await this.tokenService.createJwtToken(
       payload,
       '24h',
     );
+    request.body.registrationToken = registrationToken;
+    const emailInfo: CreateEmailDto = {
+      to: request.body.email,
+      subject: 'gold-sushi: email verification',
+      template:
+        '/Users/admin/Documents/backend/nestjs/goldushi-api/src/mail/template/template.pug',
+      dataTemplate: {
+        text: `http://localhost:3000/auth/verifyEmail/${registrationToken}`,
+      },
+    };
+    request.body.emailInfo = emailInfo;
     return next.handle();
   }
 }
