@@ -11,7 +11,7 @@ import { Role } from './roles.entity';
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
   id: string;
   @Column({ type: 'varchar', length: 30 })
   name: string;
@@ -31,7 +31,7 @@ export class User {
   registered: boolean;
   @Column({ type: 'varchar', nullable: true })
   smsToken: string;
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true, name: 'registration_token' })
   registrationToken: string;
   @Column({ type: 'varchar', nullable: true })
   accessToken: string;

@@ -9,7 +9,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { MailService } from '../mail/mail.service';
 
 @Injectable()
@@ -35,20 +35,24 @@ export class UsersService {
       const newUser: User = new User(createUserDto);
       await this.userRepository.save(newUser);
       //TODO call mailService to send token, do it with transaction
-      await this.mailService.sendMail({
-        to: 'johnwayneretouch@gmail.com',
-        subject: 'gold-sushi: email verification',
-        template:
-          '/Users/admin/Documents/backend/nestjs/goldushi-api/src/mail/template/template.pug',
-        dataTemplate: {
-          text: 'please verify your email',
-        },
-      });
+      await this.mailService.sendMail(createUserDto.emailInfo);
       return newUser.name;
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }
   }
+
+  async getRegistrationToken(registrationToken: string): Promise<string> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.registrationToken')
+      .where('user.registrationToken = :registrationToken', {
+        registrationToken: registrationToken,
+      })
+      .getOne();
+    return user['registrationToken'];
+  }
+
   findAll() {
     return `This action returns all users`;
   }

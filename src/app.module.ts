@@ -4,6 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
 import { TokenModule } from './token/token.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TokenModule } from './token/token.module';
     DatabaseModule,
     UsersModule,
     TokenModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

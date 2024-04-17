@@ -41,7 +41,7 @@ export class CreateUserInterceptor implements NestInterceptor {
       template:
         '/Users/admin/Documents/backend/nestjs/goldushi-api/src/mail/template/template.pug',
       dataTemplate: {
-        text: `http://localhost:3000/auth/verifyEmail/${registrationToken}`,
+        text: `<a href='http://localhost:3000/auth/email-verify/${registrationToken}'>verify email</a>`,
       },
     };
     request.body.emailInfo = emailInfo;
