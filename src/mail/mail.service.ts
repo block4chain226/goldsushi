@@ -7,9 +7,7 @@ export class MailService {
     private readonly from,
     private readonly to,
     private readonly registrationToken,
-    // private jwt_service: JwtService,
-  ) {
-
-  }
+    private jwt_service: JwtService,
+  ) {}
 }
-// TODO gen 24h email verify token at createUser.interceptor and put to create-user-dto
+// TODO gen 24h emailverify verify token at createUser.interceptor and put to create-user-dto
