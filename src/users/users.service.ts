@@ -21,6 +21,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    console.log('=>(users.service.ts:24) createUserDto', createUserDto);
     // password hash at createUser.interceptor
     const user: User = await this.userRepository
       .findOneBy({
@@ -36,15 +37,7 @@ export class UsersService {
       const newUser: User = new User(createUserDto);
       await this.userRepository.save(newUser);
       //TODO call mailService to send token, do it with transaction
-      await this.mailService.sendMail({
-        to: 'johnwayneretouch@gmail.com',
-        subject: 'gold-sushi: email verification',
-        template:
-          '/Users/admin/Documents/backend/nestjs/goldushi-api/src/mail/template/template.pug',
-        dataTemplate: {
-          text: 'please verify your email',
-        },
-      });
+      await this.mailService.sendMail(createUserDto.emailInfo);
       return newUser.name;
     } catch (err) {
       throw new InternalServerErrorException(err.message);
