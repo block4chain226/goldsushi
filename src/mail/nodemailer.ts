@@ -1,5 +1,6 @@
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 
 export const nodeMailer = MailerModule.forRootAsync({
   useFactory: (configService: ConfigService) => ({
@@ -10,6 +11,13 @@ export const nodeMailer = MailerModule.forRootAsync({
       auth: {
         user: configService.get<string>('MAIL_SENDER'),
         pass: configService.get<string>('MAIL_PASSWORD'),
+      },
+    },
+    template: {
+      dir: __dirname + './template/notification',
+      adapter: new PugAdapter({ inlineCssEnabled: true }),
+      options: {
+        strict: true,
       },
     },
   }),

@@ -2,7 +2,6 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -12,12 +11,13 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MailService } from '../mail/mail.service';
+import { Buffer } from 'node:buffer';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    // private mailService: MailService,
+    private mailService: MailService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -36,6 +36,14 @@ export class UsersService {
       const newUser: User = new User(createUserDto);
       await this.userRepository.save(newUser);
       //TODO call mailService to send token, do it with transaction
+      await this.mailService.sendMail({
+        to: 'johnwayneretouch@gmail.com',
+        subject: 'gold-sushi: email verification',
+        text: 'please verify your email',
+        template:
+          '/Users/admin/Documents/backend/nestjs/goldushi-api/src/mail/template/template.pug',
+        dataTemplate: 'data',
+      });
       return newUser.name;
     } catch (err) {
       throw new InternalServerErrorException(err.message);
