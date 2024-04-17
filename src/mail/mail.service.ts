@@ -16,12 +16,7 @@ export class MailService implements IMailService {
       datamailer.template,
       datamailer.dataTemplate,
     );
-    await this._processSendEmail(
-      datamailer.to,
-      datamailer.subject,
-      datamailer.text,
-      render,
-    );
+    await this._processSendEmail(datamailer.to, datamailer.subject, render);
   }
 
   _bodytemplete(template, data) {
@@ -31,14 +26,12 @@ export class MailService implements IMailService {
   async _processSendEmail(
     to: string,
     subject: string,
-    text: string,
     body: string,
   ): Promise<void> {
     await this.mailerMain
       .sendMail({
         to: to,
         subject: subject,
-        text: text,
         html: body,
       })
       .then(() => {

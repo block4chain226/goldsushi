@@ -39,10 +39,11 @@ export class UsersService {
       await this.mailService.sendMail({
         to: 'johnwayneretouch@gmail.com',
         subject: 'gold-sushi: email verification',
-        text: 'please verify your email',
         template:
           '/Users/admin/Documents/backend/nestjs/goldushi-api/src/mail/template/template.pug',
-        dataTemplate: 'data',
+        dataTemplate: {
+          text: 'please verify your email',
+        },
       });
       return newUser.name;
     } catch (err) {
