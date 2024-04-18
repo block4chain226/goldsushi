@@ -9,18 +9,21 @@ import {
 
 @Entity('categories')
 export class Category {
-  @PrimaryGeneratedColumn({ name: 'category_id' })
-  id: number;
+  @PrimaryGeneratedColumn('uuid', { name: 'category_id' })
+  id: string;
   @Column({ type: 'varchar', length: 30 })
   title: string;
-  @ManyToOne(() => Category, (category) => category.childCategories, {
-    eager: true,
-  })
+  @Column({ type: 'uuid', nullable: true, name: 'parent_id' })
+  parentId?: string;
+  @ManyToOne(() => Category, (category) => category.childCategories)
   @JoinColumn({ name: 'parent_id' })
   parentCategory: Category;
   @OneToMany(() => Category, (category) => category.parentCategory, {
     onDelete: 'SET NULL',
   })
   childCategories: Category[];
+
+  constructor(entity: Partial<Category>) {
+    Object.assign(this, entity);
+  }
 }
-//
