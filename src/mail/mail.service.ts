@@ -6,10 +6,7 @@ import * as pug from 'pug';
 
 @Injectable()
 export class MailService implements IMailService {
-  constructor(
-    private readonly mailerMain: MailerMain,
-    private jwt_service: JwtService,
-  ) {}
+  constructor(private readonly mailerMain: MailerMain) {}
 
   async sendMail(datamailer): Promise<void> {
     const render = this._bodytemplete(

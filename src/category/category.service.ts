@@ -37,14 +37,14 @@ export class CategoryService {
       { id: id },
       updateCategoryDto,
     );
-    if (!updated)
+    if (updated.affected < 1)
       throw new InternalServerErrorException(`category ${id} was not updated`);
     return `This action updates a #${id} category`;
   }
 
   async remove(id: string) {
     const deleted = await this.categoryRepository.delete({ id: id });
-    if (!deleted)
+    if (deleted.affected < 1)
       throw new InternalServerErrorException(`category ${id} was not deleted`);
     return `This action removes a #${id} category`;
   }

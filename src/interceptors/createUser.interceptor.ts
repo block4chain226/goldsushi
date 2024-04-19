@@ -35,7 +35,7 @@ export class CreateUserInterceptor implements NestInterceptor {
       '24h',
     );
     request.body.registrationToken = registrationToken;
-    const emailInfo: CreateEmailDto = {
+    request.body.emailInfo = {
       to: request.body.email,
       subject: 'gold-sushi: email verification',
       template:
@@ -44,7 +44,6 @@ export class CreateUserInterceptor implements NestInterceptor {
         text: `<a href='http://localhost:3000/auth/email-verify/${registrationToken}'>verify email</a>`,
       },
     };
-    request.body.emailInfo = emailInfo;
     return next.handle();
   }
 }

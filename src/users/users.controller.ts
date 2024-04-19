@@ -19,8 +19,8 @@ export class UsersController {
 
   @UseInterceptors(CreateUserInterceptor)
   @Post('registration')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() createUserDto: CreateUserDto, @Body('emailInfo') emailInfo: object) {
+    return this.usersService.create(createUserDto, emailInfo);
   }
 
   @Get()

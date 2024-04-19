@@ -19,7 +19,7 @@ export class UsersService {
     private mailService: MailService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto, emailInfo: object) {
     // password hash at createUser.interceptor
     const user: User = await this.userRepository
       .findOneBy({
@@ -35,7 +35,7 @@ export class UsersService {
       const newUser: User = new User(createUserDto);
       await this.userRepository.save(newUser);
       //TODO call mailService to send token, do it with transaction
-      await this.mailService.sendMail(createUserDto.emailInfo);
+      await this.mailService.sendMail(emailInfo);
       return newUser.name;
     } catch (err) {
       throw new InternalServerErrorException(err.message);
