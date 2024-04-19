@@ -1,4 +1,4 @@
-import { IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { Role } from '../entities/roles.entity';
 import { CreateEmailDto } from './create-email.dto';
 
@@ -11,7 +11,9 @@ export class CreateUserDto {
   password: string;
   @IsPhoneNumber()
   phone: string;
-  registrationToken?: string;
+  @IsOptional()
+  @IsString()
+  registrationToken: string;
   role: Role;
   emailInfo: CreateEmailDto;
 }

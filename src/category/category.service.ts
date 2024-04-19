@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,11 +32,20 @@ export class CategoryService {
     return await this.categoryRepository.findOne({ where: { id: id } });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    const updated = await this.categoryRepository.update(
+      { id: id },
+      updateCategoryDto,
+    );
+    if (!updated)
+      throw new InternalServerErrorException(`category ${id} was not updated`);
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
+    const deleted = await this.categoryRepository.delete({ id: id });
+    if (!deleted)
+      throw new InternalServerErrorException(`category ${id} was not deleted`);
     return `This action removes a #${id} category`;
   }
 }
