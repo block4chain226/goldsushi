@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { IsPhoneNumber } from 'class-validator';
 import { Role } from './roles.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -17,6 +18,7 @@ export class User {
   name: string;
   @Column({ type: 'varchar', length: 30 })
   email: string;
+  @Exclude()
   @Column({ type: 'varchar' })
   password: string;
   @Column({ type: 'varchar' })
@@ -25,16 +27,22 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'role_id' })
   role: Role;
+  @Exclude()
   @Column({ type: 'boolean' })
   smsVerified: boolean;
+  @Exclude()
   @Column({ type: 'boolean' })
   registered: boolean;
+  @Exclude()
   @Column({ type: 'varchar', nullable: true })
   smsToken: string;
+  @Exclude()
   @Column({ type: 'varchar', nullable: true, name: 'registration_token' })
   registrationToken: string;
+  @Exclude()
   @Column({ type: 'varchar', nullable: true })
   accessToken: string;
+  @Exclude()
   @Column({ type: 'varchar', nullable: true })
   refreshToken: string;
 

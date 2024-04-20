@@ -36,7 +36,7 @@ export class UsersService {
       await this.userRepository.save(newUser);
       //TODO call mailService to send token, do it with transaction
       await this.mailService.sendMail(emailInfo);
-      return newUser.name;
+      return newUser;
     } catch (err) {
       throw new InternalServerErrorException(err.message);
     }

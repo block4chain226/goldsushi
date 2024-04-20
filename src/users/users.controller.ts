@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,9 +18,12 @@ import { CreateUserInterceptor } from '../interceptors/createUser.interceptor';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseInterceptors(CreateUserInterceptor)
+  @UseInterceptors(CreateUserInterceptor, ClassSerializerInterceptor)
   @Post('registration')
-  create(@Body() createUserDto: CreateUserDto, @Body('emailInfo') emailInfo: object) {
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @Body('emailInfo') emailInfo: object,
+  ) {
     return this.usersService.create(createUserDto, emailInfo);
   }
 
