@@ -6,20 +6,36 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from "path";
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+  ) {}
 
   @Post()
-  async create(@Body() createCategoryDto: CreateCategoryDto) {
-    console.log(createCategoryDto);
-    return <Category>await this.categoryService.create(createCategoryDto);
+  @UseInterceptors(
+    FileInterceptor('image', {
+      dest: path.join(__dirname, '../../src/storage/files/'),
+    }),
+  )
+  async create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    console.log(image);
+    return <Category>(
+      await this.categoryService.create(createCategoryDto, image)
+    );
   }
 
   @Get()

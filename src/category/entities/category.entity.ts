@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { IsNotEmpty } from 'class-validator';
 
 @Entity('categories')
 export class Category {
@@ -22,6 +23,9 @@ export class Category {
     onDelete: 'SET NULL',
   })
   childCategories: Category[];
+  @Column({ nullable: true })
+  @IsNotEmpty()
+  url: string;
 
   constructor(entity: Partial<Category>) {
     Object.assign(this, entity);

@@ -8,15 +8,23 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    private storageService: StorageService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(createCategoryDto: CreateCategoryDto, image): Promise<Category> {
+    if (image) {
+      createCategoryDto.url = await this.storageService.uploadFile(
+        image.path,
+        image.originalname,
+      );
+    }
     const newCategory = new Category(createCategoryDto);
     await this.categoryRepository.save(newCategory);
     if (!newCategory.id)

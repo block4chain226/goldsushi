@@ -6,4 +6,6 @@ export class CreateCategoryDto {
   @IsString()
   @IsOptional()
   parentId: string;
+  @IsOptional()
+  url: string;
 }
