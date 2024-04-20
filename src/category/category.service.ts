@@ -22,7 +22,7 @@ export class CategoryService {
     if (image) {
       createCategoryDto.url = await this.storageService.uploadFile(
         image.path,
-        image.originalname,
+        (image.originalname = image.originalname.replaceAll(' ', '.')),
       );
     }
     const newCategory = new Category(createCategoryDto);
@@ -35,18 +35,41 @@ export class CategoryService {
   async findAll(): Promise<Category[] | Category> {
     return await this.categoryRepository.find();
   }
-
+  // TODO do all db operations in transactions
   async findOne(id: string): Promise<Category> {
-    return await this.categoryRepository.findOne({ where: { id: id } });
+    return await this.categoryRepository.findOne({ where: { id } });
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  //TODO get category, update img to cloud update img to db then delete img in cloud
+  async update(id: string, updateCategoryDto: UpdateCategoryDto, image) {
+    let isUrlUpdated: boolean = false;
+    let oldUrl: string;
+    const category = await this.categoryRepository.findOne({ where: { id } });
+    if (!category.id)
+      throw new InternalServerErrorException('can`t update category');
+    if (image) {
+      oldUrl = category.url;
+      updateCategoryDto.url = await this.storageService.uploadFile(
+        image.path,
+        (image.originalname = image.originalname.replaceAll(' ', '.')),
+      );
+      if (updateCategoryDto.url !== oldUrl) {
+        isUrlUpdated = true;
+      }
+    }
     const updated = await this.categoryRepository.update(
       { id: id },
       updateCategoryDto,
     );
     if (updated.affected < 1)
       throw new InternalServerErrorException(`category ${id} was not updated`);
+    if (isUrlUpdated) {
+      const urlToDelete = oldUrl.substring(
+        oldUrl.lastIndexOf('retouchbucket') + 14,
+      );
+      console.log('=>(category.service.ts:68) urlToDelete', urlToDelete);
+      await this.storageService.delete(urlToDelete.toString());
+    }
     return `This action updates a #${id} category`;
   }
 

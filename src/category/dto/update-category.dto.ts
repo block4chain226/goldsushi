@@ -9,4 +9,6 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
   @IsString()
   @IsOptional()
   parentId: string;
+  @IsOptional()
+  url: string;
 }
