@@ -40,7 +40,7 @@ export class CategoryService {
     return await this.categoryRepository.findOne({ where: { id } });
   }
 
-  //TODO get category, update img to cloud update img to db then delete img in cloud
+  //get category, update img to cloud update img to db then delete img in cloud
   async update(id: string, updateCategoryDto: UpdateCategoryDto, image) {
     let isUrlUpdated: boolean = false;
     let oldUrl: string;
@@ -64,11 +64,8 @@ export class CategoryService {
     if (updated.affected < 1)
       throw new InternalServerErrorException(`category ${id} was not updated`);
     if (isUrlUpdated) {
-      const urlToDelete = oldUrl.substring(
-        oldUrl.lastIndexOf('retouchbucket') + 14,
-      );
-      console.log('=>(category.service.ts:68) urlToDelete', urlToDelete);
-      await this.storageService.delete(urlToDelete.toString());
+      const urlToDelete = this.storageService.parseUrlToPath(oldUrl);
+      await this.storageService.delete(urlToDelete);
     }
     return `This action updates a #${id} category`;
   }

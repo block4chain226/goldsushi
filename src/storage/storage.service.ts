@@ -16,7 +16,7 @@ export class StorageService {
       projectId: this.configService.get<string>('PROJECT'),
       credentials: require(keyPath),
     });
-    this.bucket = 'retouchbucket';
+    this.bucket = this.configService.get<string>('BUCKET');
   }
 
   async uploadFile(filePath: string, destination: string): Promise<string> {
@@ -27,19 +27,16 @@ export class StorageService {
     return file.publicUrl();
   }
 
-  async parseUrlToPath(path1: string): Promise<string> {
-    console.log('=>(storage.service.ts:31) path1', path1);
-    if (!path1)
+  parseUrlToPath(url: string): string {
+    console.log('=>(storage.service.ts:31) url', url);
+    if (!url)
       throw new BadRequestException(
         'empty path for google cloud storage parsing',
       );
-    return path1.substring(path1.lastIndexOf('retouchbucket/') + 14);
+    return url.substring(url.lastIndexOf(this.bucket) + this.bucket.length + 1);
   }
 
-  async delete(path: string) {
-    await this.storage
-      .bucket('retouchbucket')
-      .file(path)
-      .delete();
+  async delete(url: string) {
+    await this.storage.bucket(this.bucket).file(url).delete();
   }
 }
