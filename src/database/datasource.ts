@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../users/entities/roles.entity';
 import { Category } from '../category/entities/category.entity';
+import { Measure } from '../ingredients/entities/measures.entity';
+import { Ingredient } from '../ingredients/entities/ingredients.entity';
 
 export const pgDataSource = TypeOrmModule.forRootAsync({
   useFactory: (configService: ConfigService) => ({
@@ -11,7 +13,7 @@ export const pgDataSource = TypeOrmModule.forRootAsync({
     port: configService.get('PORT'),
     password: configService.get('PASSWORD'),
     username: configService.get('USERNAME'),
-    entities: [User, Role, Category],
+    entities: [User, Role, Category, Measure, Ingredient],
     database: configService.get('DATABASE'),
     synchronize: true,
     logging: true,

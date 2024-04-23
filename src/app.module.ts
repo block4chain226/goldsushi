@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { IngredientsModule } from './ingredients/ingredients.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { memoryStorage } from 'multer';
     TokenModule,
     AuthModule,
     CategoryModule,
+    IngredientsModule,
   ],
   controllers: [],
   providers: [],
