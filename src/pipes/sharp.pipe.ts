@@ -10,17 +10,11 @@ export class SharpPipe
   constructor(private configService: ConfigService) {}
   async transform(image: Express.Multer.File): Promise<string> {
     const originalName = path.parse(image.originalname).name;
-    const filename = originalName + '.webp';
+    const filename = originalName.replaceAll(' ', '.') + '.webp';
     await sharp(image.buffer)
       .resize(800)
       .webp({ effort: 3 })
-      .toFile(
-        path.join(
-          __dirname,
-          this.configService.get<string>('UPLOAD'),
-          filename,
-        ),
-      );
+      .toFile(path.join(this.configService.get<string>('UPLOAD'), filename));
     return filename;
   }
 }
