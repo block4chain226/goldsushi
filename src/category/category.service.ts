@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
+import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
 
 @Injectable()
 export class CategoryService {
@@ -16,13 +18,14 @@ export class CategoryService {
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
     private storageService: StorageService,
+    private configService: ConfigService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto, image): Promise<Category> {
     if (image) {
       createCategoryDto.url = await this.storageService.uploadFile(
-        image.path,
-        (image.originalname = image.originalname.replaceAll(' ', '.')),
+        path.join(this.configService.get<string>('UPLOAD'), image),
+        image.replaceAll(' ', '.'),
       );
     }
     const newCategory = new Category(createCategoryDto);
@@ -50,8 +53,8 @@ export class CategoryService {
     if (image) {
       oldUrl = category.url;
       updateCategoryDto.url = await this.storageService.uploadFile(
-        image.path,
-        (image.originalname = image.originalname.replaceAll(' ', '.')),
+        path.join(this.configService.get<string>('UPLOAD'), image),
+        image.replaceAll(' ', '.'),
       );
       if (updateCategoryDto.url !== oldUrl) {
         isUrlUpdated = true;

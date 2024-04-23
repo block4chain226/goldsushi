@@ -24,11 +24,11 @@ export class StorageService {
     const [file] = await bucket.upload(filePath, {
       destination,
     });
+    console.log(file.publicUrl());
     return file.publicUrl();
   }
 
   parseUrlToPath(url: string): string {
-    console.log('=>(storage.service.ts:31) url', url);
     if (!url)
       throw new BadRequestException(
         'empty path for google cloud storage parsing',

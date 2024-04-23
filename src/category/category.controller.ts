@@ -16,26 +16,18 @@ import { Category } from './entities/category.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
+import { SharpPipe } from '../pipes/sharp.pipe';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('image', {
-      dest: path.join(__dirname, '../../src/storage/files/'),
-      limits: {
-        files: 1,
-        // fileSize: 1024 * 1024,
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile(SharpPipe) image: string,
   ) {
-    console.log(typeof image);
     return <Category>(
       await this.categoryService.create(createCategoryDto, image)
     );
@@ -52,19 +44,11 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      dest: path.join(__dirname, '../../src/storage/files/'),
-      limits: {
-        files: 1,
-        fileSize: 1024 * 1024,
-      },
-    }),
-  )
+  @UseInterceptors(FileInterceptor('image'))
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile(SharpPipe) image: string,
   ) {
     return this.categoryService.update(id, updateCategoryDto, image);
   }
