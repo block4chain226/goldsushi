@@ -9,6 +9,7 @@ import { CategoryModule } from './category/category.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { IngredientsModule } from './ingredients/ingredients.module';
+import { ReceipesModule } from './receipes/receipes.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { IngredientsModule } from './ingredients/ingredients.module';
     AuthModule,
     CategoryModule,
     IngredientsModule,
+    ReceipesModule,
   ],
   controllers: [],
   providers: [],

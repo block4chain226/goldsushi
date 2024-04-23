@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Measure } from './measures.entity';
+import { Receipe } from '../../receipes/entities/receipes.entity';
 
 @Entity({ name: 'ingredients' })
 export class Ingredient {
@@ -23,6 +25,8 @@ export class Ingredient {
   })
   @JoinColumn({ name: 'measure_id' })
   measure: Measure;
+  @OneToMany(() => Receipe, (receipe) => receipe.ingredient)
+  receipes: Receipe[];
 
   constructor(entity: Partial<Ingredient>) {
     Object.assign(this, entity);
