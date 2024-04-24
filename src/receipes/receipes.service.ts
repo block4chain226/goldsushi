@@ -20,4 +20,9 @@ export class ReceipesService {
     if (!newReceipe) throw new BadRequestException('receipe was not created');
     return plainToInstance(ReceipeResponseDto, newReceipe);
   }
+
+  async getAllReceipes(): Promise<ReceipeResponseDto[]> {
+    const receipes = await this.receipeRepository.find();
+    return plainToInstance(ReceipeResponseDto, receipes);
+  }
 }

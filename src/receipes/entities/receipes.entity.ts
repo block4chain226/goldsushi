@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Ingredient } from '../../ingredients/entities/ingredients.entity';
 import { Item } from '../../items/entities/items.entity';
 
@@ -12,9 +19,13 @@ export class Receipe {
   itemId: string;
   @Column({ type: 'int' })
   quantity: number;
-  @ManyToOne(() => Ingredient, (ingredient) => ingredient.receipes)
+  @ManyToOne(() => Ingredient, (ingredient) => ingredient.receipes, {
+    eager: true,
+  })
+  @JoinColumn({ name: 'ingredient_id' })
   ingredient: Ingredient;
-  @ManyToOne(() => Item, (item) => item.receipes)
+  @OneToOne(() => Item, (item) => item.receipe, { eager: true })
+  @JoinColumn({ name: 'item_id' })
   item: Item;
 
   constructor(entity: Partial<Receipe>) {

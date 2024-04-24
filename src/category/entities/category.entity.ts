@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
+import { Item } from '../../items/entities/items.entity';
 
 @Entity('categories')
 export class Category {
@@ -23,6 +24,8 @@ export class Category {
     onDelete: 'SET NULL',
   })
   childCategories: Category[];
+  @OneToMany(() => Item, (item) => item.category)
+  items: Item[];
   @Column({ nullable: true })
   @IsNotEmpty()
   url: string;

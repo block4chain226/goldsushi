@@ -17,6 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { SharpPipe } from '../pipes/sharp.pipe';
+import { CategoryResponseDto } from './dto/category-response.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -34,8 +35,8 @@ export class CategoryController {
   }
 
   @Get()
-  async findAll() {
-    return <Category[] | Category>await this.categoryService.findAll();
+  async findAll(): Promise<CategoryResponseDto[]> {
+    return await this.categoryService.findAll();
   }
 
   @Get(':id')

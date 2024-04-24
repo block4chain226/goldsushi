@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ReceipesService } from './receipes.service';
 import { CreateReceipeDto } from './dto/create-receipe.dto';
 import { ReceipeResponseDto } from './dto/response-receipe.dto';
@@ -12,5 +12,10 @@ export class ReceipesController {
     @Body() createReceipeDto: CreateReceipeDto,
   ): Promise<ReceipeResponseDto> {
     return this.receipesService.createReceipe(createReceipeDto);
+  }
+
+  @Get()
+  async getAllReceipes(): Promise<ReceipeResponseDto[]> {
+    return this.receipesService.getAllReceipes();
   }
 }

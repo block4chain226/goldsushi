@@ -1,8 +1,10 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
@@ -14,14 +16,21 @@ export class Item {
   id: string;
   @Column({ type: 'uuid', name: 'category_id' })
   categoryId: string;
+  @Column({ type: 'uuid', name: 'receipe_id', nullable: true })
+  receipeId: string;
   @Column({ type: 'varchar', length: 30 })
   title: string;
   @Column({ type: 'int' })
   price: number;
   @Column({ type: 'varchar' })
   url: string;
-  @ManyToOne(() => Category)
+  @ManyToOne(() => Category, { eager: true })
+  @JoinColumn({ name: 'category_id' })
   category: Category;
-  @OneToMany(() => Receipe, (receipe) => receipe.item)
-  receipes: Receipe[];
+  @OneToOne(() => Receipe, (receipe) => receipe.item)
+  receipe: Receipe;
+
+  constructor(entity: Partial<Item>) {
+    Object.assign(this, entity);
+  }
 }

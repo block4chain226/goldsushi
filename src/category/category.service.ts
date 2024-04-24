@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
+import { CategoryResponseDto } from './dto/category-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CategoryService {
@@ -35,8 +37,9 @@ export class CategoryService {
     return newCategory;
   }
 
-  async findAll(): Promise<Category[] | Category> {
-    return await this.categoryRepository.find();
+  async findAll(): Promise<CategoryResponseDto[]> {
+    const categories = await this.categoryRepository.find();
+    return plainToInstance(CategoryResponseDto, categories);
   }
   // TODO do all db operations in transactions
   async findOne(id: string): Promise<Category> {
