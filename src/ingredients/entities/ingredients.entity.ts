@@ -12,13 +12,13 @@ import { Receipe } from '../../receipes/entities/receipes.entity';
 @Entity({ name: 'ingredients' })
 export class Ingredient {
   @PrimaryGeneratedColumn('uuid', { name: 'ingredient_id' })
-  ingredient: string;
+  id: string;
   @Column({ type: 'varchar', length: 30 })
   title: string;
   @Column({ type: 'int' })
   price: number;
-  @Column({ type: 'varchar', nullable: true })
-  measure_id: string;
+  @Column({ type: 'varchar', nullable: true, name:'measure_id' })
+  measureId: string;
   @ManyToOne(() => Measure, (measure) => measure.ingredients, {
     onDelete: 'SET NULL',
     eager: true,
