@@ -16,7 +16,7 @@ export class Category {
   @Column({ type: 'varchar', length: 30 })
   title: string;
   @Column({ type: 'uuid', nullable: true, name: 'parent_id' })
-  parentId?: string;
+  parentId: string;
   @ManyToOne(() => Category, (category) => category.childCategories)
   @JoinColumn({ name: 'parent_id' })
   parentCategory: Category;

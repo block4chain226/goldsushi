@@ -4,7 +4,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
@@ -27,8 +26,8 @@ export class Item {
   @ManyToOne(() => Category, { eager: true })
   @JoinColumn({ name: 'category_id' })
   category: Category;
-  @OneToOne(() => Receipe, (receipe) => receipe.item)
-  receipe: Receipe;
+  @OneToMany(() => Receipe, (receipe) => receipe.item)
+  receipes: Receipe[];
 
   constructor(entity: Partial<Item>) {
     Object.assign(this, entity);

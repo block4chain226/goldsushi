@@ -3,7 +3,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Ingredient } from '../../ingredients/entities/ingredients.entity';
@@ -24,7 +23,7 @@ export class Receipe {
   })
   @JoinColumn({ name: 'ingredient_id' })
   ingredient: Ingredient;
-  @OneToOne(() => Item, (item) => item.receipe, { eager: true })
+  @ManyToOne(() => Item, (item) => item.receipes)
   @JoinColumn({ name: 'item_id' })
   item: Item;
 

@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { ArgumentMetadata, Module } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { StorageModule } from '../storage/storage.module';
+import { SharpPipe } from '../pipes/sharp.pipe';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category]), StorageModule],

@@ -9,8 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
-import { ConfigService } from '@nestjs/config';
-import * as path from 'path';
 import { CategoryResponseDto } from './dto/category-response.dto';
 import { plainToInstance } from 'class-transformer';
 
@@ -20,14 +18,17 @@ export class CategoryService {
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
     private storageService: StorageService,
-    private configService: ConfigService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto, image): Promise<Category> {
+  async createCategory(
+    createCategoryDto: CreateCategoryDto,
+    image: string,
+    catalog: string,
+  ): Promise<CategoryResponseDto> {
     if (image) {
       createCategoryDto.url = await this.storageService.uploadFile(
-        path.join(this.configService.get<string>('UPLOAD'), image),
-        image.replaceAll(' ', '.'),
+        createCategoryDto.url + image,
+        catalog.toLowerCase() + '/' + image.replaceAll(' ', '.'),
       );
     }
     const newCategory = new Category(createCategoryDto);
@@ -42,12 +43,17 @@ export class CategoryService {
     return plainToInstance(CategoryResponseDto, categories);
   }
   // TODO do all db operations in transactions
-  async findOne(id: string): Promise<Category> {
+  async findOne(id: string): Promise<CategoryResponseDto> {
     return await this.categoryRepository.findOne({ where: { id } });
   }
 
   //get category, update img to cloud update img to db then delete img in cloud
-  async update(id: string, updateCategoryDto: UpdateCategoryDto, image) {
+  async updateCategory(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+    image,
+    catalog: string,
+  ): Promise<string> {
     let isUrlUpdated: boolean = false;
     let oldUrl: string;
     const category = await this.categoryRepository.findOne({ where: { id } });
@@ -56,8 +62,8 @@ export class CategoryService {
     if (image) {
       oldUrl = category.url;
       updateCategoryDto.url = await this.storageService.uploadFile(
-        path.join(this.configService.get<string>('UPLOAD'), image),
-        image.replaceAll(' ', '.'),
+        updateCategoryDto.url + image,
+        catalog.toLowerCase() + '/' + image.replaceAll(' ', '.'),
       );
       if (updateCategoryDto.url !== oldUrl) {
         isUrlUpdated = true;
@@ -76,7 +82,7 @@ export class CategoryService {
     return `This action updates a #${id} category`;
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<string> {
     const deleted = await this.categoryRepository.delete({ id: id });
     if (deleted.affected < 1)
       throw new InternalServerErrorException(`category ${id} was not deleted`);

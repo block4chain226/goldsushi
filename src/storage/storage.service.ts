@@ -24,7 +24,6 @@ export class StorageService {
     const [file] = await bucket.upload(filePath, {
       destination,
     });
-    console.log(file.publicUrl());
     return file.publicUrl();
   }
 
@@ -33,7 +32,11 @@ export class StorageService {
       throw new BadRequestException(
         'empty path for google cloud storage parsing',
       );
-    return url.substring(url.lastIndexOf(this.bucket) + this.bucket.length + 1);
+    console.log('url', url);
+    let urlTodelete = url.substring(
+      url.lastIndexOf(this.bucket) + this.bucket.length + 1,
+    );
+    return urlTodelete.replace('%2F', '/');
   }
 
   async delete(url: string) {
