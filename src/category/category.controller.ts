@@ -33,6 +33,7 @@ export class CategoryController {
     @UploadedFile(SharpPipe) image: string,
     @Req() req: Request,
   ): Promise<CategoryResponseDto> {
+    console.log(req.body['handler']);
     return await this.categoryService.createCategory(
       createCategoryDto,
       image,
@@ -69,6 +70,6 @@ export class CategoryController {
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<string> {
-    return this.categoryService.remove(id);
+    return this.categoryService.deleteCategory(id);
   }
 }

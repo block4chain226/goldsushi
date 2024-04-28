@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -7,7 +8,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
 import { CategoryResponseDto } from './dto/category-response.dto';
 import { plainToInstance } from 'class-transformer';
@@ -18,6 +19,7 @@ export class CategoryService {
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
     private storageService: StorageService,
+    @Inject('DATA_SOURCE') private dataSource: DataSource,
   ) {}
 
   async createCategory(
@@ -42,7 +44,7 @@ export class CategoryService {
     const categories = await this.categoryRepository.find();
     return plainToInstance(CategoryResponseDto, categories);
   }
-  // TODO do all db operations in transactions
+
   async findOne(id: string): Promise<CategoryResponseDto> {
     return await this.categoryRepository.findOne({ where: { id } });
   }
@@ -82,10 +84,29 @@ export class CategoryService {
     return `This action updates a #${id} category`;
   }
 
-  async remove(id: string): Promise<string> {
-    const deleted = await this.categoryRepository.delete({ id: id });
-    if (deleted.affected < 1)
+  async deleteCategory(id: string): Promise<string> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    const repository = queryRunner.manager.getRepository(Category);
+    await queryRunner.startTransaction();
+    const category = await repository.findOneBy({ id });
+    if (!category)
+      throw new BadRequestException('category to delete does not exist');
+    const deleted = await repository.delete({ id });
+    if (deleted.affected < 1) {
+      await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException(`category ${id} was not deleted`);
-    return `This action removes a #${id} category`;
+    }
+    const urlToDelete = this.storageService.parseUrlToPath(category.url);
+    await this.storageService.delete(urlToDelete).catch(async (err) => {
+      await queryRunner.rollbackTransaction();
+      console.log(err.message);
+      throw new InternalServerErrorException(
+        'category was not deleted: problem with cloud storage',
+      );
+    });
+    await queryRunner.commitTransaction();
+    await queryRunner.release();
+    return `Category #${id} was deleted`;
   }
 }
