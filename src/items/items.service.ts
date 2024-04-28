@@ -76,19 +76,30 @@ export class ItemsService {
     return `Item #${id} was updated`;
   }
 
-  //TODO transaction if image was not deleted in google cloud need cancel bd delete
   async deleteItem(id: string) {
-    const item = await this.itemRepository.findOne({ where: { id } });
-    if (!item.id)
-      throw new BadRequestException('item to delete does not exist');
-    const deleted = await this.itemRepository.delete({ id });
-    if (deleted.affected < 1)
-      throw new InternalServerErrorException(`item ${id} was not deleted`);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    const repository = queryRunner.manager.getRepository(Item);
+    await queryRunner.startTransaction();
+    const item = await repository.findOneBy({ id });
+    if (!item) throw new BadRequestException('item to delete does not exist');
+    const deleted = await repository.delete({ id });
+    if (deleted.affected < 1) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(
+        `item ${id} was not deleted, not correct id`,
+      );
+    }
     const urlToDelete = this.storageService.parseUrlToPath(item.url);
-    const deletedImage = await this.storageService.delete(urlToDelete);
-    if (deletedImage[0].statusCode !== 204)
-      throw new InternalServerErrorException(`item ${id} was not deleted`);
-    console.log('=>(items.service.ts:85) del', deletedImage);
+    await this.storageService.delete(urlToDelete).catch(async (err) => {
+      await queryRunner.rollbackTransaction();
+      console.log(err.message);
+      throw new InternalServerErrorException(
+        'item was not deleted: problem with cloud storage',
+      );
+    });
+    await queryRunner.commitTransaction();
+    await queryRunner.release();
     return `Item #${id} was deleted`;
   }
 
