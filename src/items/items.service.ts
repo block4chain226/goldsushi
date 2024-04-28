@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -10,12 +11,14 @@ import { plainToInstance } from 'class-transformer';
 import { ItemResponseDto } from './dto/item-response.dto';
 import { StorageService } from '../storage/storage.service';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Repository } from "typeorm";
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class ItemsService {
   constructor(
-    @InjectRepository(Item) private itemRepository: Repository<Item>,
+    @Inject('DATA_SOURCE') private dataSource: DataSource,
+    @InjectRepository(Item)
+    private itemRepository: Repository<Item>,
     private storageService: StorageService,
   ) {}
   // TODO cant get access to config file from sharp to save category and item images in diff folders

@@ -11,6 +11,7 @@ import { memoryStorage } from 'multer';
 import { IngredientsModule } from './ingredients/ingredients.module';
 import { ReceipesModule } from './receipes/receipes.module';
 import { ItemsModule } from './items/items.module';
+import { databaseProviders } from './database/database.provider';
 
 @Module({
   imports: [
@@ -29,6 +30,6 @@ import { ItemsModule } from './items/items.module';
     ItemsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [databaseProviders],
 })
 export class AppModule {}

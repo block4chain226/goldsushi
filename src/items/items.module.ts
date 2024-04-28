@@ -3,11 +3,12 @@ import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Item } from './entities/items.entity';
-import { StorageService } from '../storage/storage.service';
 import { StorageModule } from '../storage/storage.module';
+import { DatabaseModule } from '../database/database.module';
+import { databaseProviders } from '../database/database.provider';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Item]), StorageModule],
+  imports: [TypeOrmModule.forFeature([Item]), StorageModule, DatabaseModule],
   controllers: [ItemsController],
   providers: [ItemsService],
 })
