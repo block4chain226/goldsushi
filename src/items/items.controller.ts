@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -53,6 +54,12 @@ export class ItemsController {
       image,
       req.body['handler'],
     );
+  }
+
+  @Delete(':id')
+  @UseInterceptors(ContextInterceptor)
+  async deleteItem(@Param('id') id: string) {
+    return this.itemsService.deleteItem(id);
   }
 
   @Get()

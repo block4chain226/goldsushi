@@ -18,6 +18,7 @@ export class AddUrlPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata): any {
     this.request.body['handler'] = cut(this.request.body['handler']);
     value.url = this.configService.get<string>(this.request.body['handler']);
+    console.log("=>(addUrl.pipe.ts:21) value.url", value.url);
     return value;
   }
 }

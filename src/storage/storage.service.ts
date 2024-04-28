@@ -32,14 +32,17 @@ export class StorageService {
       throw new BadRequestException(
         'empty path for google cloud storage parsing',
       );
-    console.log('url', url);
     let urlTodelete = url.substring(
       url.lastIndexOf(this.bucket) + this.bucket.length + 1,
     );
     return urlTodelete.replace('%2F', '/');
   }
 
+  replaceToSlash(url: string): string {
+    return url.replace('%2F', '/');
+  }
+
   async delete(url: string) {
-    await this.storage.bucket(this.bucket).file(url).delete();
+    return await this.storage.bucket(this.bucket).file(url).delete();
   }
 }

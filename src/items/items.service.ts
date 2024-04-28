@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Item } from './entities/items.entity';
-import { Repository } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { plainToInstance } from 'class-transformer';
 import { ItemResponseDto } from './dto/item-response.dto';
 import { StorageService } from '../storage/storage.service';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { Repository } from "typeorm";
 
 @Injectable()
 export class ItemsService {
@@ -29,7 +29,9 @@ export class ItemsService {
         createItemDto.url + image,
         catalog.toLowerCase() + '/' + image.replaceAll(' ', '.'),
       );
+      createItemDto.url = this.storageService.replaceToSlash(createItemDto.url);
       const item = new Item(createItemDto);
+      console.log(item.url);
       const newItem = await this.itemRepository.save(item);
       if (!newItem.id) throw new BadRequestException('item was not created');
       return plainToInstance(ItemResponseDto, newItem);
@@ -56,6 +58,7 @@ export class ItemsService {
         updateItemDto.url + image,
         catalog.toLowerCase() + '/' + image.replaceAll(' ', '.'),
       );
+      updateItemDto.url = this.storageService.replaceToSlash(updateItemDto.url);
       if (updateItemDto.url !== oldUrl) {
         isUrlUpdated = true;
       }
@@ -68,6 +71,22 @@ export class ItemsService {
       await this.storageService.delete(urlToDelete);
     }
     return `Item #${id} was updated`;
+  }
+
+  //TODO transaction if image was not deleted in google cloud need cancel bd delete
+  async deleteItem(id: string) {
+    const item = await this.itemRepository.findOne({ where: { id } });
+    if (!item.id)
+      throw new BadRequestException('item to delete does not exist');
+    const deleted = await this.itemRepository.delete({ id });
+    if (deleted.affected < 1)
+      throw new InternalServerErrorException(`item ${id} was not deleted`);
+    const urlToDelete = this.storageService.parseUrlToPath(item.url);
+    const deletedImage = await this.storageService.delete(urlToDelete);
+    if (deletedImage[0].statusCode !== 204)
+      throw new InternalServerErrorException(`item ${id} was not deleted`);
+    console.log('=>(items.service.ts:85) del', deletedImage);
+    return `Item #${id} was deleted`;
   }
 
   async getAllItems(): Promise<ItemResponseDto[]> {
