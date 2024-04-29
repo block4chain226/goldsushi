@@ -33,7 +33,7 @@ export class ReceipesService {
     updateReceipeDto: UpdateReceipeDto,
   ): Promise<string> {
     const receipe = await this.receipeRepository.findOneBy({ id });
-    if (!receipe.id) throw new BadRequestException('receipe does not exist');
+    if (!receipe) throw new BadRequestException('receipe does not exist');
     const updated = await this.receipeRepository.update(
       { id: id },
       updateReceipeDto,
@@ -45,7 +45,7 @@ export class ReceipesService {
 
   async deleteReceipe(id: string): Promise<string> {
     const receipe = await this.receipeRepository.findOneBy({ id });
-    if (!receipe.id) throw new BadRequestException('receipe does not exist');
+    if (!receipe) throw new BadRequestException('receipe does not exist');
     const deleted = await this.receipeRepository.delete({ id });
     if (deleted.affected < 1)
       throw new BadRequestException('receipe does not exist');

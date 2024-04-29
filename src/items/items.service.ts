@@ -34,7 +34,6 @@ export class ItemsService {
       );
       createItemDto.url = this.storageService.replaceToSlash(createItemDto.url);
       const item = new Item(createItemDto);
-      console.log(item.url);
       const newItem = await this.itemRepository.save(item);
       if (!newItem.id) throw new BadRequestException('item was not created');
       return plainToInstance(ItemResponseDto, newItem);
@@ -54,7 +53,7 @@ export class ItemsService {
     let isUrlUpdated: boolean = false;
     let oldUrl: string;
     const item = await this.itemRepository.findOne({ where: { id } });
-    if (!item.id) throw new InternalServerErrorException('can`t update item');
+    if (!item) throw new InternalServerErrorException('item does not exist');
     if (image) {
       oldUrl = item.url;
       updateItemDto.url = await this.storageService.uploadFile(
@@ -82,7 +81,7 @@ export class ItemsService {
     const repository = queryRunner.manager.getRepository(Item);
     await queryRunner.startTransaction();
     const item = await repository.findOneBy({ id });
-    if (!item) throw new BadRequestException('item to delete does not exist');
+    if (!item) throw new BadRequestException('item does not exist');
     const deleted = await repository.delete({ id });
     if (deleted.affected < 1) {
       await queryRunner.rollbackTransaction();

@@ -45,7 +45,7 @@ export class IngredientsService {
     updateIngredient: UpdateIngredientDto,
   ): Promise<string> {
     const ingredient = await this.ingredientsRepository.findOneBy({ id });
-    if (!ingredient.id)
+    if (!ingredient)
       throw new BadRequestException('ingredient does not exist');
     const updated = await this.ingredientsRepository.update(
       { id: id },
@@ -58,8 +58,7 @@ export class IngredientsService {
 
   async deleteIngredient(id: string): Promise<string> {
     const ingredient = await this.ingredientsRepository.findOneBy({ id });
-    if (!ingredient.id)
-      throw new BadRequestException('ingredient does not exist');
+    if (!ingredient) throw new BadRequestException('ingredient does not exist');
     const deleted = await this.ingredientsRepository.delete({ id });
     if (deleted.affected < 1)
       throw new BadRequestException('ingredient does not exist');

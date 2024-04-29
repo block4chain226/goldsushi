@@ -40,15 +40,6 @@ export class CategoryService {
     return newCategory;
   }
 
-  async findAll(): Promise<CategoryResponseDto[]> {
-    const categories = await this.categoryRepository.find();
-    return plainToInstance(CategoryResponseDto, categories);
-  }
-
-  async findOne(id: string): Promise<CategoryResponseDto> {
-    return await this.categoryRepository.findOne({ where: { id } });
-  }
-
   //get category, update img to cloud update img to db then delete img in cloud
   async updateCategory(
     id: string,
@@ -59,8 +50,8 @@ export class CategoryService {
     let isUrlUpdated: boolean = false;
     let oldUrl: string;
     const category = await this.categoryRepository.findOne({ where: { id } });
-    if (!category.id)
-      throw new InternalServerErrorException('can`t update category');
+    if (!category)
+      throw new InternalServerErrorException('category does not exist');
     if (image) {
       oldUrl = category.url;
       updateCategoryDto.url = await this.storageService.uploadFile(
@@ -108,5 +99,14 @@ export class CategoryService {
     await queryRunner.commitTransaction();
     await queryRunner.release();
     return `Category #${id} was deleted`;
+  }
+
+  async findAll(): Promise<CategoryResponseDto[]> {
+    const categories = await this.categoryRepository.find();
+    return plainToInstance(CategoryResponseDto, categories);
+  }
+
+  async findOne(id: string): Promise<CategoryResponseDto> {
+    return await this.categoryRepository.findOne({ where: { id } });
   }
 }
