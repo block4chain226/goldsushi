@@ -6,6 +6,9 @@ import { Measure } from '../ingredients/entities/measures.entity';
 import { Ingredient } from '../ingredients/entities/ingredients.entity';
 import { Receipe } from '../receipes/entities/receipes.entity';
 import { Item } from '../items/entities/items.entity';
+import { Order } from '../orders/entities/orders.entity';
+import { OrderTypes } from '../orders/entities/orderTypes.entity';
+import { PaymentType } from '../ingredients/entities/paymentTypes.entity';
 
 export const dataSource = new DataSource({
   type: 'postgres',
@@ -14,7 +17,18 @@ export const dataSource = new DataSource({
   username: 'postgres',
   password: '796163',
   database: 'pizza_delivery',
-  entities: [User, Role, Category, Measure, Ingredient, Receipe, Item],
+  entities: [
+    User,
+    Role,
+    Category,
+    Measure,
+    Ingredient,
+    Receipe,
+    Item,
+    Order,
+    OrderTypes,
+    PaymentType,
+  ],
   synchronize: true,
 });
 

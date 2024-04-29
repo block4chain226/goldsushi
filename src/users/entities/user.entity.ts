@@ -5,10 +5,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { IsPhoneNumber } from 'class-validator';
 import { Role } from './roles.entity';
 import { Exclude } from 'class-transformer';
+import { Order } from '../../orders/entities/orders.entity';
 
 @Entity('users')
 export class User {
@@ -27,6 +29,8 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'role_id' })
   role: Role;
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
   @Exclude()
   @Column({ type: 'boolean' })
   smsVerified: boolean;

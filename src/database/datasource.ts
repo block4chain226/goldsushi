@@ -7,6 +7,9 @@ import { Measure } from '../ingredients/entities/measures.entity';
 import { Ingredient } from '../ingredients/entities/ingredients.entity';
 import { Receipe } from '../receipes/entities/receipes.entity';
 import { Item } from '../items/entities/items.entity';
+import { Order } from '../orders/entities/orders.entity';
+import { OrderTypes } from '../orders/entities/orderTypes.entity';
+import { PaymentType } from '../ingredients/entities/paymentTypes.entity';
 
 export const pgDataSource = TypeOrmModule.forRootAsync({
   useFactory: (configService: ConfigService) => ({
@@ -15,7 +18,18 @@ export const pgDataSource = TypeOrmModule.forRootAsync({
     port: configService.get('PORT'),
     password: configService.get('PASSWORD'),
     username: configService.get('USERNAME'),
-    entities: [User, Role, Category, Measure, Ingredient, Receipe, Item],
+    entities: [
+      User,
+      Role,
+      Category,
+      Measure,
+      Ingredient,
+      Receipe,
+      Item,
+      Order,
+      OrderTypes,
+      PaymentType,
+    ],
     database: configService.get('DATABASE'),
     synchronize: true,
     logging: true,
