@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Param } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Param,
+} from '@nestjs/common';
 import { CreateMeasureDto } from './dto/create-measure.dto';
 import { Measure } from './entities/measures.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +12,8 @@ import { Repository } from 'typeorm';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { IngredientsResponseDto } from './dto/ingredients-response.dto';
+import { UpdateReceipeDto } from '../receipes/dto/update-receipe.dto';
+import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 
 @Injectable()
 export class IngredientsService {
@@ -31,6 +38,32 @@ export class IngredientsService {
     if (!newIngredient)
       throw new BadRequestException('ingredient was not created');
     return <Ingredient>newIngredient;
+  }
+
+  async updateIngredient(
+    id: string,
+    updateIngredient: UpdateIngredientDto,
+  ): Promise<string> {
+    const ingredient = await this.ingredientsRepository.findOneBy({ id });
+    if (!ingredient.id)
+      throw new BadRequestException('ingredient does not exist');
+    const updated = await this.ingredientsRepository.update(
+      { id: id },
+      updateIngredient,
+    );
+    if (updated.affected < 1)
+      throw new InternalServerErrorException('ingredient was not updated');
+    return `Ingredient #${id} was updated`;
+  }
+
+  async deleteIngredient(id: string): Promise<string> {
+    const ingredient = await this.ingredientsRepository.findOneBy({ id });
+    if (!ingredient.id)
+      throw new BadRequestException('ingredient does not exist');
+    const deleted = await this.ingredientsRepository.delete({ id });
+    if (deleted.affected < 1)
+      throw new BadRequestException('ingredient does not exist');
+    return `Ingredient #${id} was deleted`;
   }
 
   async getAllIngredients(): Promise<IngredientsResponseDto[]> {

@@ -1,9 +1,19 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { IngredientsService } from './ingredients.service';
 import { CreateMeasureDto } from './dto/create-measure.dto';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { Ingredient } from './entities/ingredients.entity';
 import { IngredientsResponseDto } from './dto/ingredients-response.dto';
+import { UpdateReceipeDto } from '../receipes/dto/update-receipe.dto';
+import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 
 @Controller('ingredients')
 export class IngredientsController {
@@ -21,6 +31,19 @@ export class IngredientsController {
     @Body() createIngredientDto: CreateIngredientDto,
   ): Promise<Ingredient> {
     return this.ingredientsService.createIngredient(createIngredientDto);
+  }
+
+  @Patch(':id')
+  async updateIngredient(
+    @Param('id') id: string,
+    @Body() updateIngredientDto: UpdateIngredientDto,
+  ): Promise<string> {
+    return this.ingredientsService.updateIngredient(id, updateIngredientDto);
+  }
+
+  @Delete(':id')
+  async deleteIngredient(@Param('id') id: string): Promise<string> {
+    return this.ingredientsService.deleteIngredient(id);
   }
 
   @Get()
