@@ -23,7 +23,7 @@ export class Receipe {
   })
   @JoinColumn({ name: 'ingredient_id' })
   ingredient: Ingredient;
-  @ManyToOne(() => Item, (item) => item.receipes)
+  @ManyToOne(() => Item, (item) => item.receipes, { eager: true })
   @JoinColumn({ name: 'item_id' })
   item: Item;
 
