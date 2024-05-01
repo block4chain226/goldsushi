@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { Receipe } from '../../receipes/entities/receipes.entity';
+import { Cart } from '../../orders/entities/cart.entity';
 
 @Entity('items')
 export class Item {
@@ -28,6 +29,8 @@ export class Item {
   category: Category;
   @OneToMany(() => Receipe, (receipe) => receipe.item)
   receipes: Receipe[];
+  @OneToMany(() => Cart, (cart) => cart.items)
+  carts: Cart[];
 
   constructor(entity: Partial<Item>) {
     Object.assign(this, entity);

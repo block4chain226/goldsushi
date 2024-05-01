@@ -12,6 +12,7 @@ import { IngredientsModule } from './ingredients/ingredients.module';
 import { ReceipesModule } from './receipes/receipes.module';
 import { ItemsModule } from './items/items.module';
 import { databaseProviders } from './database/database.provider';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { databaseProviders } from './database/database.provider';
     IngredientsModule,
     ReceipesModule,
     ItemsModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [databaseProviders],

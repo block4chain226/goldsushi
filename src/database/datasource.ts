@@ -9,7 +9,8 @@ import { Receipe } from '../receipes/entities/receipes.entity';
 import { Item } from '../items/entities/items.entity';
 import { Order } from '../orders/entities/orders.entity';
 import { OrderTypes } from '../orders/entities/orderTypes.entity';
-import { PaymentType } from '../ingredients/entities/paymentTypes.entity';
+import { PaymentType } from '../orders/entities/paymentTypes.entity';
+import { Cart } from '../orders/entities/cart.entity';
 
 export const pgDataSource = TypeOrmModule.forRootAsync({
   useFactory: (configService: ConfigService) => ({
@@ -29,6 +30,7 @@ export const pgDataSource = TypeOrmModule.forRootAsync({
       Order,
       OrderTypes,
       PaymentType,
+      Cart,
     ],
     database: configService.get('DATABASE'),
     synchronize: true,
