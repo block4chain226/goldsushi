@@ -53,6 +53,9 @@ export class Order {
   @JoinColumn({ name: 'payment_type_id' })
   paymentType: PaymentType;
 
+  @OneToMany(() => Cart, (cart) => cart.order)
+  carts: Cart[];
+
   constructor(entity: Partial<Order>) {
     Object.assign(this, entity);
   }

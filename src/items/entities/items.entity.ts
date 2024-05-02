@@ -29,7 +29,7 @@ export class Item {
   category: Category;
   @OneToMany(() => Receipe, (receipe) => receipe.item)
   receipes: Receipe[];
-  @OneToMany(() => Cart, (cart) => cart.items)
+  @OneToMany(() => Cart, (cart) => cart.item)
   carts: Cart[];
 
   constructor(entity: Partial<Item>) {

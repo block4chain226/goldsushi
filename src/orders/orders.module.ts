@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/orders.entity';
 import { OrderTypes } from './entities/orderTypes.entity';
@@ -7,10 +7,17 @@ import { Cart } from './entities/cart.entity';
 import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { databaseProviders } from '../database/database.provider';
+import { IngredientsModule } from '../ingredients/ingredients.module';
+import { Ingredient } from '../ingredients/entities/ingredients.entity';
+import { IngredientsService } from '../ingredients/ingredients.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderTypes, PaymentType, Cart])],
+  imports: [
+    IngredientsModule,
+    TypeOrmModule.forFeature([Order, OrderTypes, PaymentType, Ingredient]),
+  ],
   providers: [OrderTypes, OrdersService, databaseProviders],
   controllers: [OrdersController],
+  exports: [],
 })
 export class OrdersModule {}
