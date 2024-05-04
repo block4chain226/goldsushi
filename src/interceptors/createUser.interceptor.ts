@@ -29,7 +29,11 @@ export class CreateUserInterceptor implements NestInterceptor {
       10,
     );
     request.body.role = 2;
-    const payload = { name: request.body.name };
+    const payload = {
+      name: request.body.name,
+      email: request.body.email,
+      phone: request.body.phone,
+    };
     const registrationToken = await this.tokenService.createJwtToken(
       payload,
       '24h',
