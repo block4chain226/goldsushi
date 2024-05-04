@@ -3,11 +3,12 @@ import { Order } from './entities/orders.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, Inject, Param } from '@nestjs/common';
 import { dataSource } from '../database/database.provider';
 import { Cart } from './entities/cart.entity';
 import { raw } from 'express';
 import { Ingredient } from '../ingredients/entities/ingredients.entity';
+import { plainToInstance } from 'class-transformer';
 
 export class OrdersService {
   constructor(
@@ -15,7 +16,7 @@ export class OrdersService {
     @Inject('DATA_SOURCE') private dataSource: DataSource,
   ) {}
 
-  async createOrder(createOrderDto: CreateOrderDto) {
+  async createOrder(createOrderDto: CreateOrderDto): Promise<string> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     const orderRepository = queryRunner.manager.getRepository(Order);
@@ -29,7 +30,7 @@ export class OrdersService {
       throw new BadRequestException('order was not created');
     }
 
-    Object.values(createOrderDto.items).forEach(async (item, index) => {
+    Object.values(createOrderDto.items).forEach(async (item) => {
       const createCartDto = {
         itemId: item['id'],
         orderId: newOrder.id,
@@ -49,5 +50,12 @@ export class OrdersService {
       });
       await queryRunner.commitTransaction();
     });
+    return `order ${newOrder.id} was created successfully`;
+  }
+
+  async getOrder(id: string): Promise<OrderResponseDto> {
+    const order = this.ordersRepository.findOneBy({ id });
+    if (!order) throw new BadRequestException(`order ${id} does not exist`);
+    return plainToInstance(OrderResponseDto, order);
   }
 }

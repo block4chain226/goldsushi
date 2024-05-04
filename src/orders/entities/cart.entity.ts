@@ -12,6 +12,7 @@ import { Item } from '../../items/entities/items.entity';
 import { Ingredient } from '../../ingredients/entities/ingredients.entity';
 import { JoinTable } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
+import { Exclude } from "class-transformer";
 
 @Entity('cart')
 export class Cart {
@@ -23,7 +24,7 @@ export class Cart {
   itemId: string;
 
   @ManyToOne(() => Order, (order) => order.carts, {
-    eager: true,
+    // eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'order_id' })

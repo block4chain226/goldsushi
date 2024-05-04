@@ -53,7 +53,7 @@ export class Order {
   @JoinColumn({ name: 'payment_type_id' })
   paymentType: PaymentType;
 
-  @OneToMany(() => Cart, (cart) => cart.order)
+  @OneToMany(() => Cart, (cart) => cart.order, { eager: true })
   carts: Cart[];
 
   constructor(entity: Partial<Order>) {
