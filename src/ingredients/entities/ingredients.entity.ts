@@ -10,7 +10,6 @@ import {
 import { Measure } from './measures.entity';
 import { Receipe } from '../../receipes/entities/receipes.entity';
 import { Cart } from '../../orders/entities/cart.entity';
-import { JoinTable } from 'typeorm';
 
 @Entity({ name: 'ingredients' })
 export class Ingredient {

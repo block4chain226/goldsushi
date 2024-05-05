@@ -4,15 +4,12 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Order } from './orders.entity';
 import { Item } from '../../items/entities/items.entity';
 import { Ingredient } from '../../ingredients/entities/ingredients.entity';
 import { JoinTable } from 'typeorm';
-import { Category } from '../../category/entities/category.entity';
-import { Exclude } from "class-transformer";
 
 @Entity('cart')
 export class Cart {
@@ -24,7 +21,6 @@ export class Cart {
   itemId: string;
 
   @ManyToOne(() => Order, (order) => order.carts, {
-    // eager: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'order_id' })
@@ -37,7 +33,7 @@ export class Cart {
   @JoinColumn({ name: 'item_id' })
   item: Item;
 
-  @ManyToMany(() => Ingredient, { onDelete: 'SET NULL' })
+  @ManyToMany(() => Ingredient, { onDelete: 'CASCADE' })
   @JoinTable({
     name: 'add_ingred',
     joinColumn: { name: 'cart_id', referencedColumnName: 'id' },
