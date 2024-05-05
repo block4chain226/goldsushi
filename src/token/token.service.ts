@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class TokenService {
   constructor(
-    @Inject(JwtService) private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService,
     @Inject(ConfigService) private configService: ConfigService,
   ) {}
 

@@ -10,9 +10,9 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  app.use(cookieParser());
   const config = new DocumentBuilder()
     .setTitle('Pizza delivery')
     .setDescription('The Pizza delivery API description')

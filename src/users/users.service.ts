@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { MailService } from '../mail/mail.service';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Injectable()
 export class UsersService {
@@ -51,6 +52,18 @@ export class UsersService {
       })
       .getOne();
     return user['registrationToken'];
+  }
+
+  async getRefreshToken(refreshToken: string): Promise<RefreshTokenDto> {
+    const refToken = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.refreshToken')
+      .where('user.refreshToken = :refreshToken', {
+        refreshToken: refreshToken,
+      })
+      .getOne();
+    console.log('=>(users.service.ts:59) refToken', refToken);
+    return refToken;
   }
 
   findAll() {

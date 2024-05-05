@@ -6,11 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ReceipesService } from './receipes.service';
 import { CreateReceipeDto } from './dto/create-receipe.dto';
 import { ReceipeResponseDto } from './dto/response-receipe.dto';
 import { UpdateReceipeDto } from './dto/update-receipe.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('receipes')
 export class ReceipesController {
@@ -37,6 +39,7 @@ export class ReceipesController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async getAllReceipes(): Promise<ReceipeResponseDto[]> {
     return this.receipesService.getAllReceipes();
   }

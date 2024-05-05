@@ -30,6 +30,10 @@ export class AuthService {
       await this.tokenService.verifyJwtToken(registartionToken);
     if (!verifiedTokenPayload)
       throw new BadRequestException('email verify: invalid registration token');
+    await this.usersRepository.update(
+      { registrationToken: token },
+      { registered: true, registrationToken: null },
+    );
     const accessToken = this.tokenService.createJwtToken(
       {
         name: verifiedTokenPayload['name'],
@@ -57,6 +61,7 @@ export class AuthService {
     const user = <User>(
       await this.usersRepository.findOneBy({ email: loginDto.email })
     );
+    console.log('user', user);
     if (!user) {
       throw new BadRequestException('invalid login or password');
     }
@@ -64,7 +69,6 @@ export class AuthService {
       loginDto.password,
       user.password,
     );
-    console.log('=>(auth.service.ts:91) user', isPassword);
     if (!isPassword) {
       throw new BadRequestException('invalid login or password');
     }
@@ -79,6 +83,14 @@ export class AuthService {
       throw new InternalServerErrorException(
         'email verify: tokens generation error',
       );
+    const result = await this.usersRepository.update(
+      { email: user.email },
+      { refreshToken },
+    );
+    if (result.affected < 1)
+      throw new InternalServerErrorException(
+        'user`s refresh token was not written to database',
+      );
     return {
       name: user.name,
       email: user.email,
@@ -86,5 +98,13 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async refreshToken(token: string) {
+    if (!token || token === '')
+      throw new BadRequestException('empty refresh token');
+    const refreshToken = await this.userService.getRefreshToken(token);
+    console.log('=>(auth.service.ts:97) refreshToken', refreshToken);
+    if (!refreshToken) throw new BadRequestException('invalid refresh token');
   }
 }

@@ -45,7 +45,7 @@ export class AuthController {
     });
     res.cookie('refresh-token', userInfo.refreshToken, {
       httpOnly: true,
-      maxAge: 60 * 3 * 1000,
+      maxAge: 60 * 5 * 1000,
       sameSite: 'strict',
     });
     return plainToInstance(LoginResponseDto, {
@@ -53,5 +53,10 @@ export class AuthController {
       email: userInfo.email,
       phone: userInfo.phone,
     });
+  }
+
+  @Post('refresh/:token')
+  async refreshToken(@Param('token') token: string) {
+    return this.authService.refreshToken(token);
   }
 }
