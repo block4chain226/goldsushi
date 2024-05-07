@@ -5,12 +5,12 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class TokenService {
   constructor(
-    private readonly jwtService: JwtService,
+    @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(ConfigService) private configService: ConfigService,
   ) {}
 
   async verifyJwtToken(token: string): Promise<object> {
-    return <object>await this.jwtService.verifyAsync(token, {
+    return await this.jwtService.verifyAsync(token, {
       secret: this.configService.get<string>('JWT_SECRET'),
     });
   }

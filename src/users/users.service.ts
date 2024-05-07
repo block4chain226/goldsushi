@@ -54,7 +54,7 @@ export class UsersService {
     return user['registrationToken'];
   }
 
-  async getRefreshToken(refreshToken: string): Promise<RefreshTokenDto> {
+  async getRefreshToken(refreshToken: string): Promise<string> {
     const refToken = await this.userRepository
       .createQueryBuilder('user')
       .select('user.refreshToken')
@@ -63,7 +63,7 @@ export class UsersService {
       })
       .getOne();
     console.log('=>(users.service.ts:59) refToken', refToken);
-    return refToken;
+    return refToken.refreshToken;
   }
 
   findAll() {

@@ -45,7 +45,7 @@ export class AuthController {
     });
     res.cookie('refresh-token', userInfo.refreshToken, {
       httpOnly: true,
-      maxAge: 60 * 5 * 1000,
+      maxAge: 60 * 3 * 1000,
       sameSite: 'strict',
     });
     return plainToInstance(LoginResponseDto, {
@@ -56,7 +56,18 @@ export class AuthController {
   }
 
   @Post('refresh/:token')
-  async refreshToken(@Param('token') token: string) {
-    return this.authService.refreshToken(token);
+  async refreshToken(
+    @Param('token') token: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const accessToken = await this.authService.refreshToken(token);
+    console.log("=>(auth.controller.ts:72) accessToken", accessToken);
+    res.cookie('access-token', accessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 60 * 2 * 1000,
+    });
+    return accessToken
   }
 }
+

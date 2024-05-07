@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BcryptService } from '../utils/Bcrypt/bcrypt.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private userService: UsersService,
     private tokenService: TokenService,
     private bcryptService: BcryptService,
+    private jwtService: JwtService,
   ) {}
 
   async emailVerify(token: string): Promise<EmailVerifyReturnDto> {
@@ -100,11 +102,25 @@ export class AuthService {
     };
   }
 
-  async refreshToken(token: string) {
+  async refreshToken(token: string): Promise<string> {
     if (!token || token === '')
       throw new BadRequestException('empty refresh token');
     const refreshToken = await this.userService.getRefreshToken(token);
-    console.log('=>(auth.service.ts:97) refreshToken', refreshToken);
+    console.log('token', refreshToken);
     if (!refreshToken) throw new BadRequestException('invalid refresh token');
+    // try {
+    let payload = await this.tokenService.verifyJwtToken(refreshToken);
+    if (!payload) throw new BadRequestException('invalid refresh token');
+    console.log('payload =', payload);
+    // const accessToken = this.tokenService.createJwtToken(payload, '2m');
+    const accessToken = this.jwtService.sign(payload, { secret: 'ivan123', expiresIn:'2m' });
+    if (!accessToken) {
+      return 'refresh token was expired';
+    }
+    // throw new BadRequestExcep?tion('access token was not refreshed');
+    return accessToken;
+    // } catch (err) {
+
+    // }
   }
 }
