@@ -3,17 +3,21 @@ import { Order } from './entities/orders.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
-import { BadRequestException, Inject, Param } from '@nestjs/common';
-import { dataSource } from '../database/database.provider';
+import { BadRequestException, Inject } from '@nestjs/common';
 import { Cart } from './entities/cart.entity';
-import { raw } from 'express';
 import { Ingredient } from '../ingredients/entities/ingredients.entity';
 import { plainToInstance } from 'class-transformer';
+import { LiqpayService } from '../liqpay/liqpay.service';
+import { ConfigService } from '@nestjs/config';
+const LIQPAY = 'LIQPAY';
+import LiqPay = require('../liqpay/liqpay');
 
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private ordersRepository: Repository<Order>,
     @Inject('DATA_SOURCE') private dataSource: DataSource,
+    @Inject(LIQPAY) private liqpayServide: LiqpayService,
+    private configService: ConfigService,
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto): Promise<string> {
@@ -50,7 +54,39 @@ export class OrdersService {
       });
       await queryRunner.commitTransaction();
     });
+// TODO FRONTEND
+    // @ts-ignore
+    const liqpay = new LiqPay(
+      this.configService.get('LIQPAY_PUBLIC'),
+      this.configService.get('LIQPAY_PRIVATE'),
+    );
+    const html = liqpay.cnb_form({
+      action: 'pay',
+      amount: '1',
+      currency: 'USD',
+      description: 'description text',
+      order_id: 'order_id_1',
+      version: '3',
+    });
+    console.log('=>(orders.service.ts:68) html', html);
+
     return `order ${newOrder.id} was created successfully`;
+  }
+
+  async acceptOrder() {
+    const liqpay = this.liqpayServide.LiqPay(
+      this.configService.get('LIQPAY_PUBLIC'),
+      this.configService.get('LIQPAY_PRIVATE'),
+    );
+    const html = (await liqpay).cnb_form({
+      action: 'pay',
+      amount: '1',
+      currency: 'USD',
+      description: 'description text',
+      order_id: 'order_id_1',
+      version: '3',
+    });
+    console.log('=>(orders.service.ts:68) html', html);
   }
 
   async getOrder(id: string): Promise<OrderResponseDto> {

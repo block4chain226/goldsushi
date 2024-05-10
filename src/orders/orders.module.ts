@@ -10,11 +10,13 @@ import { databaseProviders } from '../database/database.provider';
 import { IngredientsModule } from '../ingredients/ingredients.module';
 import { Ingredient } from '../ingredients/entities/ingredients.entity';
 import { IngredientsService } from '../ingredients/ingredients.service';
+import { LiqpayModule } from '../liqpay/liqpay.module';
 
 @Module({
   imports: [
     IngredientsModule,
     TypeOrmModule.forFeature([Order, OrderTypes, PaymentType, Ingredient]),
+    LiqpayModule,
   ],
   providers: [OrderTypes, OrdersService, databaseProviders],
   controllers: [OrdersController],
