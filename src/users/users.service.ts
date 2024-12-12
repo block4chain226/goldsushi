@@ -1,84 +1,67 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
-import { MailService } from '../mail/mail.service';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
+  Injectable
+} from "@nestjs/common";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { User } from "./entities/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { MailService } from "../mail/mail.service";
+import { plainToInstance } from "class-transformer";
+import { ResponseUserDto } from "./dto/response-user.dto";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private mailService: MailService,
-  ) {}
+    private mailService: MailService
+  ) {
+  }
 
   async create(createUserDto: CreateUserDto, emailInfo: object) {
-    // password hash at createUser.interceptor
-    const user: User = await this.userRepository
-      .findOneBy({
-        email: createUserDto.email,
-      })
-      .catch((err) => {
-        throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
-      });
-    if (user) {
-      throw new BadRequestException('user already exists');
-    }
-    try {
-      const newUser: User = new User(createUserDto);
-      await this.userRepository.save(newUser);
-      //TODO call mailService to send token, do it with transaction
-      await this.mailService.sendMail(emailInfo);
-      return newUser;
-    } catch (err) {
-      throw new InternalServerErrorException(err.message);
-    }
+    const newUser: User = new User(createUserDto);
+    await this.userRepository.save(newUser);
+    //TODO call mailService to send token, do it with transaction
+    await this.mailService.sendMail(emailInfo);
+    return newUser;
   }
 
   async getRegistrationToken(registrationToken: string): Promise<string> {
     const user = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user.registrationToken')
-      .where('user.registrationToken = :registrationToken', {
-        registrationToken: registrationToken,
+      .createQueryBuilder("user")
+      .select("user.registrationToken")
+      .where("user.registrationToken = :registrationToken", {
+        registrationToken: registrationToken
       })
       .getOne();
-    return user['registrationToken'];
+    return user["registrationToken"];
   }
 
-  async getRefreshToken(refreshToken: string): Promise<string> {
-    const refToken = await this.userRepository
-      .createQueryBuilder('user')
-      .select('user.refreshToken')
-      .where('user.refreshToken = :refreshToken', {
-        refreshToken: refreshToken,
-      })
-      .getOne();
-    console.log('=>(users.service.ts:59) refToken', refToken);
-    return refToken.refreshToken;
+  async findAll(): Promise<ResponseUserDto[]> {
+    const users = await this.userRepository.find();
+    return plainToInstance(ResponseUserDto, users);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findOne(id: string): Promise<ResponseUserDto> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    return plainToInstance(ResponseUserDto, user);
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOneByEmail(email: string): Promise<ResponseUserDto> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return plainToInstance(ResponseUserDto, user);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<string> {
+    const updated = await this.userRepository.update(id, updateUserDto);
+    if (updated.affected < 1) throw new BadRequestException("user was not updated");
+    return `user ${id} was updated successfully`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string): Promise<string> {
+    const deleted = await this.userRepository.delete(id);
+    if (deleted.affected < 1) throw new BadRequestException("user was not deleted");
+    return `user ${id} was deleted successfully`;
   }
 }

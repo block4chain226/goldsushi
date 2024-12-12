@@ -5,7 +5,7 @@ export class CreateCategoryDto {
   title: string;
   @IsString()
   @IsOptional()
-  parentId: string;
+  parentId?: string;
   @IsOptional()
   url: string;
 }

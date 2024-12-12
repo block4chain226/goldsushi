@@ -1,11 +1,8 @@
 import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
+  IsEmail, IsOptional,
   IsPhoneNumber,
-  IsString,
-} from 'class-validator';
-import { Role } from '../entities/roles.entity';
+  IsString
+} from "class-validator";
 
 export class CreateUserDto {
   @IsString()
@@ -17,8 +14,5 @@ export class CreateUserDto {
   @IsPhoneNumber()
   phone: string;
   @IsOptional()
-  @IsString()
   registrationToken: string;
-  @IsNotEmpty()
-  role: Role;
 }

@@ -1,73 +1,82 @@
-import { Body, Controller, Param, Post, Res } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { EmailVerifyReturnDto } from './email-verify-return.dto';
-import { Response } from 'express';
-import { LoginDto } from './dto/login.dto';
-import { LoginResponseDto } from './dto/login-response.dto';
-import { plainToInstance } from 'class-transformer';
+import { Body, Controller, Get, Param, Post, Res } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { EmailVerifyReturnDto } from "./email-verify-return.dto";
+import { Response } from "express";
+import { LoginDto } from "./dto/login.dto";
+import { LoginResponseDto } from "./dto/login-response.dto";
+import { plainToInstance } from "class-transformer";
+import { ApiTags } from "@nestjs/swagger";
+import { Public } from "./dto/public.decorator";
+import { ConfigService } from "@nestjs/config";
 
-@Controller('auth')
+@ApiTags("auth")
+@Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {
+  }
 
-  @Post('email-verify/:token')
+  @Public()
+  @Get("email-verify/:token")
   async emailVerify(
-    @Param('token') token: string,
-    @Res({ passthrough: true }) res: Response,
+    @Param("token") token: string,
+    @Res({ passthrough: true }) res: Response
   ) {
     const userInfo = <EmailVerifyReturnDto>(
       await this.authService.emailVerify(token)
     );
-    res.cookie('access-token', userInfo.accessToken, {
+    console.log("=>(auth.controller.ts:57) userInfo", userInfo);
+    res.cookie("access-token", userInfo.accessToken, {
       httpOnly: true,
-      maxAge: 60 * 2 * 1000,
-      sameSite: 'strict',
+      maxAge: this.configService.get("ACCESS_MAX_AGE"),
+      sameSite: "strict"
     });
-    res.cookie('refresh-token', userInfo.refreshToken, {
+    res.cookie("refresh-token", userInfo.refreshToken, {
       httpOnly: true,
-      maxAge: 60 * 3 * 1000,
-      sameSite: 'strict',
+      maxAge: this.configService.get("REFRESH_MAX_AGE"),
+      sameSite: "strict"
     });
-    return { msg: 'email was verified successfully' };
+    return { msg: "email was verified successfully" };
   }
 
-  @Post('login')
+  @Public()
+  @Post("login")
   async login(
     @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ): Promise<LoginResponseDto> {
     const userInfo = await this.authService.login(loginDto);
-    console.log('=>(auth.controller.ts:57) userInfo', userInfo);
-    res.cookie('access-token', userInfo.accessToken, {
+    res.cookie("access-token", userInfo.accessToken, {
       httpOnly: true,
-      maxAge: 60 * 2 * 1000,
-      sameSite: 'strict',
+      maxAge: this.configService.get("ACCESS_MAX_AGE"),
+      sameSite: "strict"
     });
-    res.cookie('refresh-token', userInfo.refreshToken, {
+    res.cookie("refresh-token", userInfo.refreshToken, {
       httpOnly: true,
-      maxAge: 60 * 3 * 1000,
-      sameSite: 'strict',
+      maxAge: this.configService.get("REFRESH_MAX_AGE"),
+      sameSite: "strict"
     });
     return plainToInstance(LoginResponseDto, {
+      id: userInfo.id,
       name: userInfo.name,
       email: userInfo.email,
-      phone: userInfo.phone,
+      phone: userInfo.phone
     });
   }
 
-  @Post('refresh/:token')
+  @Public()
+  @Post("refresh/:token")
   async refreshToken(
-    @Param('token') token: string,
-    @Res({ passthrough: true }) res: Response,
+    @Param("token") token: string,
+    @Res({ passthrough: true }) res: Response
   ) {
     const accessToken = await this.authService.refreshToken(token);
     console.log("=>(auth.controller.ts:72) accessToken", accessToken);
-    res.cookie('access-token', accessToken, {
+    res.cookie("access-token", accessToken, {
       httpOnly: true,
-      sameSite: 'strict',
-      maxAge: 60 * 2 * 1000,
+      sameSite: "strict",
+      maxAge: this.configService.get("ACCESS_MAX_AGE")
     });
-    return accessToken
+    return accessToken;
   }
 }
 
