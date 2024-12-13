@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException
+  InternalServerErrorException, UnauthorizedException
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { TokenService } from "../token/token.service";
@@ -77,6 +77,7 @@ export class AuthService {
     if (!isPassword) {
       throw new BadRequestException("invalid login or password");
     }
+    if (!user.registered) throw new UnauthorizedException("account is not activated");
     const access_payload = {
       id: user.id,
       name: user.name,
