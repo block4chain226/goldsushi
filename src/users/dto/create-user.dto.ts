@@ -14,5 +14,5 @@ export class CreateUserDto {
   @IsPhoneNumber()
   phone: string;
   @IsOptional()
-  registrationToken: string;
+  registrationToken?: string;
 }
