@@ -13,7 +13,6 @@ import { ReceipesModule } from './receipes/receipes.module';
 import { ItemsModule } from './items/items.module';
 import { databaseProviders } from './database/database.provider';
 import { OrdersModule } from './orders/orders.module';
-import { TestModule } from './test1/test.module';
 import { TestingModule } from '@nestjs/testing';
 import { AuthGuard } from './auth/auth.guard';
 import { JWTTokenExpiredFilter } from './auth/filters/token-expired.exception';
@@ -35,7 +34,6 @@ import { JWTTokenExpiredFilter } from './auth/filters/token-expired.exception';
     ReceipesModule,
     ItemsModule,
     OrdersModule,
-    TestModule,
   ],
   controllers: [],
   providers: [

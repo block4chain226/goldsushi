@@ -29,12 +29,12 @@ export class AuthController {
     console.log('=>(auth.controller.ts:57) userInfo', userInfo);
     res.cookie('access-token', userInfo.accessToken, {
       httpOnly: true,
-      maxAge: this.configService.get('ACCESS_MAX_AGE'),
+      maxAge: this.configService.get('JWT_ACCESS_MAX_AGE'),
       sameSite: 'strict',
     });
     res.cookie('refresh-token', userInfo.refreshToken, {
       httpOnly: true,
-      maxAge: this.configService.get('REFRESH_MAX_AGE'),
+      maxAge: this.configService.get('JWT_REFRESH_MAX_AGE'),
       sameSite: 'strict',
     });
     return { msg: 'email was verified successfully' };

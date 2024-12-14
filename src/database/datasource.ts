@@ -14,10 +14,11 @@ import { Cart } from '../orders/entities/cart.entity';
 export const pgDataSource = TypeOrmModule.forRootAsync({
   useFactory: (configService: ConfigService) => ({
     type: 'postgres',
-    host: configService.get('HOST'),
-    port: configService.get('PORT'),
-    password: configService.get('PASSWORD'),
-    username: configService.get('USERNAME'),
+    host: configService.get('DB_HOST'),
+    port: configService.get('DB_PORT'),
+    password: configService.get('DB_PASSWORD'),
+    username: configService.get('DB_USERNAME'),
+    database: configService.get('DB_DATABASE'),
     entities: [
       User,
       Category,
@@ -30,7 +31,6 @@ export const pgDataSource = TypeOrmModule.forRootAsync({
       PaymentType,
       Cart,
     ],
-    database: configService.get('DATABASE'),
     synchronize: true,
     logging: true,
   }),
