@@ -45,8 +45,7 @@ export class IngredientsService {
     updateIngredient: UpdateIngredientDto,
   ): Promise<string> {
     const ingredient = await this.ingredientsRepository.findOneBy({ id });
-    if (!ingredient)
-      throw new BadRequestException('ingredient does not exist');
+    if (!ingredient) throw new BadRequestException('ingredient does not exist');
     const updated = await this.ingredientsRepository.update(
       { id: id },
       updateIngredient,

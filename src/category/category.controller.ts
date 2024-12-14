@@ -19,7 +19,7 @@ import { CategoryResponseDto } from './dto/category-response.dto';
 import { ContextInterceptor } from '../interceptors/context.interceptor';
 import { AddUrlPipe } from '../pipes/addUrl.pipe';
 import { Request } from 'express';
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('category')
 @Controller('category')
