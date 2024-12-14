@@ -32,7 +32,7 @@ export class StorageService {
       throw new BadRequestException(
         'empty path for google cloud storage parsing',
       );
-    let urlTodelete = url.substring(
+    const urlTodelete = url.substring(
       url.lastIndexOf(this.bucket) + this.bucket.length + 1,
     );
     return urlTodelete.replace('%2F', '/');

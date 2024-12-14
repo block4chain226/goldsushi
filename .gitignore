@@ -54,5 +54,3 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-flash-nimbus-416109-ef5b52b2a6aa.json

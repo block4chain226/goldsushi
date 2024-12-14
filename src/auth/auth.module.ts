@@ -8,7 +8,7 @@ import { User } from '../users/entities/user.entity';
 import { BcryptModule } from '../utils/Bcrypt/bcrypt.module';
 import { BcryptService } from '../utils/Bcrypt/bcrypt.service';
 import { AuthGuard } from './auth.guard';
-import { TokenService } from "../token/token.service";
+import { TokenService } from '../token/token.service';
 
 @Module({
   imports: [TokenModule, TypeOrmModule.forFeature([User]), UsersModule],
