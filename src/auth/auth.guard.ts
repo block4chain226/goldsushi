@@ -22,7 +22,6 @@ export class AuthGuard implements CanActivate {
     let accessToken = request.headers["authorization"];
     if (!accessToken) throw new UnauthorizedException("not authorized");
     accessToken = accessToken.split(" ")[1];
-    console.log("=>(auth.guard.ts:18) accessToken", accessToken);
     const payload = await this.tokenService.verifyJwtToken(accessToken);
     return true;
   }

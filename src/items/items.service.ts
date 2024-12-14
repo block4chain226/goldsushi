@@ -2,63 +2,72 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Item } from './entities/items.entity';
-import { CreateItemDto } from './dto/create-item.dto';
-import { plainToInstance } from 'class-transformer';
-import { ItemResponseDto } from './dto/item-response.dto';
-import { StorageService } from '../storage/storage.service';
-import { UpdateItemDto } from './dto/update-item.dto';
-import { DataSource, Repository } from 'typeorm';
+  InternalServerErrorException
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Item } from "./entities/items.entity";
+import { CreateItemDto } from "./dto/create-item.dto";
+import { plainToInstance } from "class-transformer";
+import { ItemResponseDto } from "./dto/item-response.dto";
+import { StorageService } from "../storage/storage.service";
+import { UpdateItemDto } from "./dto/update-item.dto";
+import { DataSource, Repository } from "typeorm";
+import { Storage1Service } from "../storage/storage1.service";
+import { Multer } from "multer";
 
 @Injectable()
 export class ItemsService {
   constructor(
-    @Inject('DATA_SOURCE') private dataSource: DataSource,
+    @Inject("DATA_SOURCE") private dataSource: DataSource,
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
     private storageService: StorageService,
-  ) {}
+    private storage1Service: Storage1Service
+  ) {
+  }
+
   // TODO cant get access to config file from sharp to save category and item images in diff folders
   async createItem(
     createItemDto: CreateItemDto,
     image: string,
-    catalog: string,
+    catalog: string
   ): Promise<ItemResponseDto> {
     if (image) {
       createItemDto.url = await this.storageService.uploadFile(
         createItemDto.url + image,
-        catalog.toLowerCase() + '/' + image.replaceAll(' ', '.'),
+        catalog.toLowerCase() + "/" + image.replaceAll(" ", ".")
       );
       createItemDto.url = this.storageService.replaceToSlash(createItemDto.url);
       const item = new Item(createItemDto);
       const newItem = await this.itemRepository.save(item);
-      if (!newItem.id) throw new BadRequestException('item was not created');
+      if (!newItem.id) throw new BadRequestException("item was not created");
       return plainToInstance(ItemResponseDto, newItem);
     }
     const item = new Item(createItemDto);
     const newItem = await this.itemRepository.save(item);
-    if (!newItem.id) throw new BadRequestException('item was not created');
+    if (!newItem.id) throw new BadRequestException("item was not created");
     return plainToInstance(ItemResponseDto, newItem);
+  }
+
+  async test(files: Express.Multer.File[]) {
+    return await this.storage1Service.uploadFIles("/", files);
   }
 
   async updateItem(
     id: string,
     updateItemDto: UpdateItemDto,
     image,
-    catalog: string,
+    catalog: string
   ): Promise<string> {
     let isUrlUpdated: boolean = false;
     let oldUrl: string;
     const item = await this.itemRepository.findOne({ where: { id } });
-    if (!item) throw new InternalServerErrorException('item does not exist');
+    if (!item) throw new InternalServerErrorException("item does not exist");
     if (image) {
       oldUrl = item.url;
       updateItemDto.url = await this.storageService.uploadFile(
         updateItemDto.url + image,
-        catalog.toLowerCase() + '/' + image.replaceAll(' ', '.'),
+        catalog.toLowerCase() + "/" + image.replaceAll(" ", ".")
       );
       updateItemDto.url = this.storageService.replaceToSlash(updateItemDto.url);
       if (updateItemDto.url !== oldUrl) {
@@ -81,12 +90,12 @@ export class ItemsService {
     const repository = queryRunner.manager.getRepository(Item);
     await queryRunner.startTransaction();
     const item = await repository.findOneBy({ id });
-    if (!item) throw new BadRequestException('item does not exist');
+    if (!item) throw new BadRequestException("item does not exist");
     const deleted = await repository.delete({ id });
     if (deleted.affected < 1) {
       await queryRunner.rollbackTransaction();
       throw new BadRequestException(
-        `item ${id} was not deleted, not correct id`,
+        `item ${id} was not deleted, not correct id`
       );
     }
     const urlToDelete = this.storageService.parseUrlToPath(item.url);
@@ -94,7 +103,7 @@ export class ItemsService {
       await queryRunner.rollbackTransaction();
       console.log(err.message);
       throw new InternalServerErrorException(
-        'item was not deleted: problem with cloud storage',
+        "item was not deleted: problem with cloud storage"
       );
     });
     await queryRunner.commitTransaction();

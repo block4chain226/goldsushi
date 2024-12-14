@@ -31,7 +31,6 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto,
     @Body("emailInfo") emailInfo: object
   ) {
-    console.log("here");
     return this.usersService.create(createUserDto, emailInfo);
   }
 

@@ -7,13 +7,13 @@ import {
   Patch,
   Post,
   Req,
-  UploadedFile,
+  UploadedFile, UploadedFiles,
   UseInterceptors
 } from "@nestjs/common";
 import { ItemsService } from "./items.service";
 import { CreateItemDto } from "./dto/create-item.dto";
 import { ItemResponseDto } from "./dto/item-response.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { SharpPipe } from "../pipes/sharp.pipe";
 import { ContextInterceptor } from "../interceptors/context.interceptor";
 import { AddUrlPipe } from "../pipes/addUrl.pipe";
@@ -25,6 +25,13 @@ import { ApiTags } from "@nestjs/swagger";
 @Controller("items")
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {
+  }
+
+
+  @Post("test")
+  @UseInterceptors(FilesInterceptor("file"))
+  test(@UploadedFiles() files: Express.Multer.File[]) {
+    return this.itemsService.test(files);
   }
 
   @Post("create")
