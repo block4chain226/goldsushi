@@ -54,7 +54,7 @@ export class OrdersService {
       });
       await queryRunner.commitTransaction();
     });
-// TODO FRONTEND
+    // TODO FRONTEND
     // @ts-ignore
     const liqpay = new LiqPay(
       this.configService.get('LIQPAY_PUBLIC'),

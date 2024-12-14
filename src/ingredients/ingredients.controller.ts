@@ -14,7 +14,7 @@ import { Ingredient } from './entities/ingredients.entity';
 import { IngredientsResponseDto } from './dto/ingredients-response.dto';
 import { UpdateReceipeDto } from '../receipes/dto/update-receipe.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('ingredients')
 @Controller('ingredients')

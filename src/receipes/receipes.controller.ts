@@ -13,7 +13,7 @@ import { CreateReceipeDto } from './dto/create-receipe.dto';
 import { ReceipeResponseDto } from './dto/response-receipe.dto';
 import { UpdateReceipeDto } from './dto/update-receipe.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('receipes')
 @Controller('receipes')
